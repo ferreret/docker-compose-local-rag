@@ -1,0 +1,94 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: unless-stopped
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - my_network
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=74.Bizcochito
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=aitecnomedia@oficinasinpapel.com
+      - PGADMIN_DEFAULT_PASSWORD=74.Heladito
+    ports: 
+      - "90:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - my_network
+  
+  ollama:
+    image: ollama/ollama
+    restart: unless-stopped
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - my_network
+  
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    restart: unless-stopped
+    container_name: open-webui
+    ports: 
+      - "3000:8080"
+    volumes:
+      - open-webui_data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    networks:
+      - my_network
+
+  qdrant:
+    image: qdrant/qdrant
+    restart: unless-stopped
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - my_network
+
+volumes:
+  n8n_data:
+  postgres_data:
+  pgadmin_data:  
+  ollama_data:
+  open-webui_data:
+  qdrant_data:
+
+networks:
+  my_network:
+    driver: bridge
