@@ -3,6 +3,8 @@ services:
     image: docker.n8n.io/n8nio/n8n
     restart: unless-stopped
     container_name: n8n
+    environment:
+      - WEBHOOK_URL=https://4a7f-2a0c-5a87-310f-4000-a3a7-138e-4a2c-5e92.ngrok-free.app
     ports:
       - "5678:5678"
     volumes:

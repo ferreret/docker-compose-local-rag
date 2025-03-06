@@ -1,0 +1,7 @@
+For working with webhooks
+
+- First, execute ngrok
+
+ngrok http http://localhost:5678
+
+- Copy URL and paste it in WEBHOOK_URL in docker-compose.yml file.
